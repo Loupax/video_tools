@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+window_info=$(xwininfo)
+
+x=$(echo "$window_info" | grep "Absolute upper-left X" | awk '{print $4}')
+y=$(echo "$window_info" | grep "Absolute upper-left Y" | awk '{print $4}')
+width=$(echo "$window_info" | grep "Width" | awk '{print $2}')
+height=$(echo "$window_info" | grep "Height" | awk '{print $2}')
+
+if [ -z "$x" ] || [ -z "$y" ] || [ -z "$width" ] || [ -z "$height" ]; then
+    echo "Failed to get window geometry."
+    exit 1
+fi
+
+timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+output_file="$HOME/Videos/${timestamp}.mp4"
+# Run ffmpeg to record the selected window
+ffmpeg -video_size "${width}x${height}" -framerate 25 -f x11grab -i ":0.0+${x},${y}" "$output_file"
+

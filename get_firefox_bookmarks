@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Check if the user provided an argument
+if [ -z "$1" ]; then
+  echo "Usage: $0 <Bookmark Folder Name>"
+  exit 1
+fi
+
+# Store the argument in a variable
+FOLDER_NAME="$1"
+
+# Copy the places.sqlite file to a temporary location
+cp /home/loupax/.mozilla/firefox/b1c02dy5.default-1722280157034/places.sqlite /tmp/places.sqlite
+
+# Query the SQLite database using the folder name as an argument
+sqlite3 /tmp/places.sqlite "SELECT moz_places.url FROM moz_bookmarks JOIN moz_places ON moz_bookmarks.fk = moz_places.id WHERE moz_bookmarks.parent IN (SELECT id FROM moz_bookmarks WHERE title='$FOLDER_NAME');"

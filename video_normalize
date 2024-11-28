@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Directory to save the normalized video files
+OUTPUT_DIR="./output"
+
+# Desired resolution (change these values as needed)
+TARGET_WIDTH=1080
+TARGET_HEIGHT=1920
+
+# Desired bitrate
+TARGET_BITRATE="2500k"
+
+# Create the output directory if it doesn't exist
+mkdir -p "$OUTPUT_DIR"
+
+# Loop through each video file passed as an argument
+for file in "$@"; do
+  # Get the filename without the path and extension
+  filename=$(basename -- "$file")
+  filename="${filename%.*}"
+
+  # Define the output file name
+  output_file="$OUTPUT_DIR/normalized.${filename}.mp4"
+
+  # Re-encode the video to a consistent format, resolution, and bitrate
+  ffmpeg -i "$file" -vf "scale=${TARGET_WIDTH}:${TARGET_HEIGHT}:force_original_aspect_ratio=decrease,pad=${TARGET_WIDTH}:${TARGET_HEIGHT}:(ow-iw)/2:(oh-ih)/2" -b:v $TARGET_BITRATE -c:v libx264 -r 30 -crf 23 -preset slow -profile:v baseline -level 3.0 -c:a aac -b:a 192k -ac 2 -g 30 -keyint_min 30 -sc_threshold 0 "$output_file"
+
+done

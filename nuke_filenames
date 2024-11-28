@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# This script will nuke the filenames of the files you'll pass as an argument. It's only slightly better than rm -rf
+# You've been warned
+if [ "$#" -eq 0 ]; then
+    echo "Usage: $0 <file-pattern>"
+    exit 1
+fi
+
+count=1
+
+for file in "$@"; do
+  ext="${file##*.}"  
+  mv "$file" "$count.$ext"
+  count=$((count + 1))
+done

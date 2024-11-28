@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Directory containing your video files
+OUTPUT_DIR="./output"
+
+# Create the output and temp directories if they don't exist
+mkdir -p "$OUTPUT_DIR"
+
+# Loop through each video file in the directory
+for file in "$@"; do
+  # Get the file extension
+  ext="${file##*.}"
+
+  # Define the output file name
+  output_file="$OUTPUT_DIR/normalized.$file"
+
+  # Re-encode the video to a consistent format
+  ffmpeg -i "$file" -c:v libx264 -crf 23 -preset slow -profile:v baseline -level 3.0 -c:a aac -b:a 192k -ac 2 -g 30 -keyint_min 30 -sc_threshold 0 "$output_file"
+
+done
+
